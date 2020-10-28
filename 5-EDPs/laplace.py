@@ -1,3 +1,5 @@
+# http://folk.ntnu.no/leifh/teaching/tkt4140/._main055.html
+
 import numpy as np
 import scipy
 import scipy.linalg
