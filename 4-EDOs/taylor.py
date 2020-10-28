@@ -38,7 +38,6 @@ def taylor(x0, t0, tf, h, *derivatives):
     n = x0.shape[0]  # dimensión del problema
     x = zeros((n, N + 1))
     x[:, 0] = x0
-    i = h * h / 2.0
     for k in range(N):
         x[:, k + 1] = x[:, k]
         for index, der in enumerate(derivatives):
