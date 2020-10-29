@@ -91,6 +91,7 @@ def pesudoInverse(matrix):
     # Return A+, being A+ = V * S+ * U.T
     return np.matmul(np.matmul(Vt.T, pseudoSigma), U.T)
 
+
 def _sortMatrices(matrixA, matrixB):
     ascendingOrder = np.argsort(matrixA)
 
@@ -180,6 +181,7 @@ def test():
     print('V*S*U.T = \n', pesudoInverse(matrix), '\n')
 
     print('Numpy solution: \n', np.linalg.pinv(matrix))
+
 
 if __name__ == "__main__":
     print("Executed as stand-alone script. Running test function.\n")
