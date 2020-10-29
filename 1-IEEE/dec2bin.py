@@ -1,14 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Trabajo Práctico: Punto Flotante
-
-Created on Mon Aug 24 11:55:55 2020
-
-@author: Batinic Rey, Joaquín
-@author: Pompozzi, Magalí M.
-@author: Zahnd, Martín E.
-"""
 
 import numpy as np
 
