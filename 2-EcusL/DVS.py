@@ -11,108 +11,139 @@ import numpy as np
 import random as rnd
 
 def svd(matrix):
+    """
+
+    Returns:
+        U, S, V.T
+
+        U: U matrix
+        S: Sigma matrix
+        V.T: V matrix already transposed
+    """
     if (type(matrix) is not np.ndarray):
         raise RuntimeError("Expected numpy matrix.")
 
-    print('A: ', matrix, '\n')
-
-    B = np.matmul(matrix.T, matrix)
+    # Eigenvalues of A^T*A
+    Dt, V = np.linalg.eig( np.matmul(matrix.T, matrix) )
     
-    # Debug
-    print (B,'\n')
+    # Sort them before going on
+    Dt, V = _sortMatrices(Dt, V)
 
-    Dt, V = np.linalg.eig(B)
-
-    D = np.zeros(np.shape(V))
-
-    # Debug
-    print('Dt shape:', np.shape(Dt))
-    print('D shape:', np.shape(D), '\n')
-
-    i = 0
-    j = 0
-    for nEigv in range(np.shape(Dt)[0]):
-        # Debug
-        print('eigv: ', Dt[nEigv])
-        
-        D[i, j] = Dt[nEigv]
-        i += 1
-        j += 1
-
-    # Debug
-    # This should print B matrix
-    print('V: \n', V, '\n')
-    print('D: \n', D, '\n')
-    print(np.matmul( np.matmul(V, D), V.T), '\n')
-
-    # Sort 'em
-
+    # Calculate each sigma.
+    # This will help us calculate each column on the U matrix
     sigmas = np.sqrt(Dt)
-
-    # Debug
-    print('sigmas: \n', sigmas, '\n')
-
-    # U's
+    
+    # Generate U
     maxSize = max(np.shape(matrix))
     U = np.zeros((maxSize, maxSize))
-    # Debug
-    print('U: \n', U, '\n')
-
-    # Esta línea es a propósito para que sea exactamente igual al video
-    V *= -1
 
     for pos in range(np.shape(sigmas)[0]):
         U[:,pos] = np.matmul(matrix, V[:,pos]) / sigmas[pos]
 
-    # Debug
-    print('U: \n', U, '\n')
-
-    # ------------- Up to here seems that everything's fine --------------
-    # Here is where the trouble begins
-
-    # currentCol = 1
-    # while currentCol < maxSize:
-    #     # Modify for multi cols
-    #     if (np.allclose(U[:,-currentCol], np.zeros((maxSize, 1)))):
-    #         rnd.seed()
-    #         for row in range(maxSize):
-    #             U[row,-currentCol] = rnd.random()
+    currentCol = 0
+    while currentCol < maxSize:
+        # Fill empty columns with numbers
+        if (np.allclose(U[:,currentCol], np.zeros((maxSize, 1)))):
+            rnd.seed()
+            for row in range(maxSize):
+                U[row,currentCol] = rnd.random()
             
-    #         # TODO WTF ? .
-    #         print('U: \n', U, '\n')
-    #         #U = _matrixOrthonormalization(U, column=-currentCol)
-    #         print('Before: ', U[:,-1])
-    #         U[:,-1] = U[:,-1] - (U[:,-1].T * U[:,0])*U[:,0] - (U[:,-1].T * U[:,1])*U[:,1]
-            
-    #         print('Before norm: ', U[:,-1])
-    #         U[:,-1] = U[:,-1] / np.linalg.norm(U[:,-1])
-    #         print('After norm: ', U[:,-1])
+            U = _matrixOrthonormalization(U, column=currentCol)
 
-    #     currentCol += 1
 
-    U[:,-1] = [0.67687, 0.82416, 0.57667]
-    U[:,-1] = U[:,-1] - (U[:,-1].T * U[:,0])*U[:,0]  - (U[:,-1].T * U[:,1])*U[:,1]
-    U[:,-1] = U[:,-1]/np.linalg.norm(U[:,-1])
+        currentCol += 1
 
-    # Debug
-    print('U: \n', U, '\n')
-    print('U.T*U: \n', U.T * U, '\n')
-
-    # Ortonormalize cols
+    # Generate Sigma matrix
+    S = np.zeros(( np.shape(U)[1], np.shape(V)[0] ))
     
+    for rowEtCol in range(0, len(sigmas), 1):
+        S[rowEtCol][rowEtCol] = sigmas[rowEtCol]
+
+    return U, S, V.T
+
+def _sortMatrices(matrixA, matrixB):
+    ascendingOrder = np.argsort(matrixA)
+
+    sortedA = np.zeros(np.shape(matrixA))
+    sortedB = np.zeros(np.shape(matrixB))
+
+    current = 0
+    for i in ascendingOrder[::-1]:
+        sortedA[current] = matrixA[i]
+        sortedB[:,current] = matrixB[:,i]
+        current += 1
+    
+    return sortedA, sortedB
+
+
+def _norm(v):
+    """Calculate the norm of a vector
+
+    Arguments:
+        v: ndarray with vector shape: (1,n) , (n,1) or (n,)
+
+    Returns:
+        Floating point number with the norm.
+    """
+    if type(v) is not np.ndarray:
+        raise RuntimeError('Please provide a numpy array.')
+    elif np.ndim(v) > 2:
+        raise RuntimeError('Too many dimensions!')
+    elif np.ndim(v) == 2 and np.shape(v)[0] != 1 and np.shape(v)[1] != 1:
+        raise RuntimeError('This is not a numpy vector.')
+    cumsum = 0
+    
+    flatv = v.flatten()
+    
+    for element in flatv:
+        cumsum += element**2
+
+    return np.sqrt(cumsum)
+
+
+def _projectOperator(v, u):
+    return np.inner(v, u)*u
+
 
 def _matrixOrthonormalization(matrix, column=0):
-    """
+    """Orthogonalize a given column of a matrix using Gram-Schmidt.
+
     matrix: Matrix to perform algorithm over
     column: Column to orthonormalize. Set to 0 to perform over the whole
             matrix.
     """
-    # TODO
-    pass
+
+    # Projections
+    columnsToTheLeft = np.shape(matrix[0,:])[0] - abs(column)
+
+    if columnsToTheLeft < 0:
+        raise RuntimeError('There are no columns at the left of this matrix.')
+
+    for currentColumn in range(0, columnsToTheLeft, 1):
+        matrix[:,column] = matrix[:,column] - \
+            _projectOperator(matrix[:,column].T, matrix[:,currentColumn])
+    
+
+    # Normalize resulting vector
+    matrix[:,column] = matrix[:,column]/_norm(matrix[:,column])
+
+    return matrix
 
 def test():
     matrix = np.array([[12, 4], [3, 2], [6, 2]])
-    svd(matrix)
+    U, S, Vt = svd(matrix)
+
+    # Debug
+    print('U: \n', U, '\n')
+    print('U.T*U: \n', np.matmul(U.T, U), '\n')
+
+    print('S: \n', S, '\n')
+
+    print('V.T: \n', Vt, '\n')
+
+    print('U*S*V.T = \n', np.matmul(np.matmul(U, S), Vt))
+
+    print('A: \n', matrix)
 
 
 if __name__ == "__main__":
