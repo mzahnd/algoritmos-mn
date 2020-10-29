@@ -19,3 +19,5 @@ def norm(v):
 
 
 # print(norm(np.array([[1],[2],[3]])))
+# print(norm(np.array([[1,2,3]])))
+# print(norm(np.array([1,2,3])))
