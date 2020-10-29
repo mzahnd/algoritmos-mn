@@ -61,6 +61,36 @@ def svd(matrix):
 
     return U, S, V.T
 
+
+def pesudoInverse(matrix):
+    """Calculate the Moore-Penrose pseudo-inverse of a matrix.
+
+    Uses SVD to achieve it.
+
+    Arguments:
+        matrix: Numpy matrix to calculate its pseudo-inverse.
+
+    Returns:
+        Numpy matrix A+ (the pseudo-inverse).
+    """
+
+    # Calculate the SVD matrices
+    U, S, Vt = svd(matrix)
+
+    # A+ = V * S+ * U.T => The sigma (S) matrix shape needs to be inverted.
+    pseudoSigma = S.T
+    sigmaShape = np.shape(pseudoSigma)
+
+    # Recalculate Sigma as Sigma+ (each value != 0 is now 1/value)
+    for row in range(0, sigmaShape[0]):
+        for col in range(0, sigmaShape[1]):
+            # pylint: disable=E1136  # pylint/issues/3139
+            if pseudoSigma[row][col] != 0:
+                pseudoSigma[row][col] = 1 / pseudoSigma[row][col]
+
+    # Return A+, being A+ = V * S+ * U.T
+    return np.matmul(np.matmul(Vt.T, pseudoSigma), U.T)
+
 def _sortMatrices(matrixA, matrixB):
     ascendingOrder = np.argsort(matrixA)
 
@@ -129,6 +159,7 @@ def _matrixOrthonormalization(matrix, column=0):
 
     return matrix
 
+
 def test():
     matrix = np.array([[12, 4], [3, 2], [6, 2]])
     U, S, Vt = svd(matrix)
@@ -145,6 +176,10 @@ def test():
 
     print('A: \n', matrix)
 
+
+    print('V*S*U.T = \n', pesudoInverse(matrix), '\n')
+
+    print('Numpy solution: \n', np.linalg.pinv(matrix))
 
 if __name__ == "__main__":
     print("Executed as stand-alone script. Running test function.\n")
