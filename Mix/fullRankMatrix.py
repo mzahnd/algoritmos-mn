@@ -15,6 +15,8 @@ def isFullRank(matrix):
         RuntimeError: when matrix dimension is not 2.
     """
 
+    # '\u2713' = ✓ (unicode tick character)
+
     print('Analysing matrix: \n', matrix)
     
     matrixNumDim = np.ndim(matrix)
@@ -27,9 +29,9 @@ def isFullRank(matrix):
     print()
 
     if min(matrixShape) == matrixRange:
-        print("[✓] Matrix is full rank.")
+        print(u"[\u2713] Matrix is full rank.")
         if matrixShape[0] == matrixShape[1]:
-            print("[✓] This matrix is squeared, so it's nonsingular.")
+            print(u"[\u2713] This matrix is squeared, so it's nonsingular.")
         else:
             print("[X] This matrix is not squeared, so it's singular.")
     else:
