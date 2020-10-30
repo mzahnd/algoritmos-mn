@@ -89,8 +89,8 @@ Realiza sustitución hacia atrás. Útil para resolver sistemas con una matriz
 
 > Ejemplo de triangular superior:
 >
-> | 12  5  6 |
-> |  0  1 -4 |
+> |  2  5  6 | <br>
+> |  0  1  4 | <br>
 > |  0  0  9 |
 
 Depende de: 
@@ -113,9 +113,9 @@ Realiza sustitución hacia adelante. Útil para resolver sistemas con una matriz
 
 > Ejemplo de triangular inferior:
 >
-> | 12   0  0 |
-> |  4   1  0 |
-> |  6  -4  9 |
+> |  2   0  0 | <br>
+> |  4   1  0 | <br>
+> |  6   4  9 |
 
 
 Depende de: 
