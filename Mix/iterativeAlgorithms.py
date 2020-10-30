@@ -62,6 +62,16 @@ def diagDominant(matrix, debug=False):
         return False
 
 def useJacobiGaussSeidel(matrix, debug=False):
+    """Given an nxn matrix, tells if Gauss-Seidel or Jacobi could be used.
+
+    Lineal system of equations: Ax = b
+    
+    Arguments:
+        matrix: Should be matrix A of the system.
+
+    Returns:
+        True if either Jacobi or Gauss-Seidel could be used    
+    """
     matrixNumDim = np.ndim(matrix)
     if (matrixNumDim != 2):
         raise RuntimeError("I'm not prepared for this. </3")
