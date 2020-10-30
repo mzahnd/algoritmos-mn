@@ -7,11 +7,15 @@ def func(x):
   return x
 
 def bisection(a,b,tolerance):
-
-  # First interval
-  a = 0
-  b = 10
-
+  '''
+  :param a inicio del intervalo en el que se operará
+  :param b final del intervalo en el que se operará
+  (ATENCIÓN: lineas 21, 22 patean b hasta que se cumplen
+  las hipóteis de Bolzano si es que no se cumplen de entrada.
+  Si la función no corta el eje X en x>a hay un loop infinito)
+  :param tolerance tolerancia de la bisección (float)
+  :return c resultado estimado de la función
+  '''
 
   # Expand the interval if f(a)f(b)>0
   while func(a)*func(b) > 0:

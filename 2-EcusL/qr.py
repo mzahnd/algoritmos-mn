@@ -35,6 +35,9 @@ def linealSolverBackwards(A, b):
 
 
 def QRdec(A):
+    '''
+    :param A: matriz a descomponer en Q, R. Puede ser rectangular.
+    '''
     numberRowsA = A.shape[0]
     numberColsA = A.shape[1]
 
@@ -73,7 +76,11 @@ def QRdec(A):
     return Q, R
 
 
-def linealSolverQR(A, b):
+def leastsqQR(A, b):
+    '''
+    :param A: matriz de coeficientes del sistema de ecuaciones
+    :param b: vector solución (IMPORTANTE: b.shape[1] = 1, es vector columna)
+    '''
 
     Q, R = QRdec(A)
     R_1 = R[:A.shape[1], :]
@@ -97,7 +104,7 @@ def linealSolverQR(A, b):
 
     return x
 
-print(linealSolverQR(np.array([[1,2],[3,4],[5,6]]), np.array([[5],[11], [17]])))
+print(leastsqQR(np.array([[1,2],[3,4],[5,6]]), np.array([[5],[11], [17]])))
 
 
 

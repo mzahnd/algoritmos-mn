@@ -5,6 +5,69 @@
 import numpy as np
 
 
+def linealSolverForward(A, b):
+    """Solves a system of equations given a lower triangular matrix.
+
+    Arguments:
+        A: Lower triangular matrix. Shape: (n, n)
+        b: System's solutions. Shape: (n, 1)
+
+    Raises:
+        RuntimeError if A is not lower triangular
+
+    Returns:
+        A numpy array with the system's X vector. Shape: (n, 1)
+    """
+    # First we check if the matrix is a lower triangle
+    if np.allclose(A, np.tril(A)):
+        n = len(b)
+        x = np.zeros((n, 1))
+
+        # we apply the forward formula for every element of x
+        for k in range(0, n):
+            tempSum = []
+            for number in range(0, k):
+                tempSum.append(-1 * A[k][number] * x[number])
+            tempSum = sum(tempSum)
+            x[k] = (b[k] + tempSum) / A[k][k]
+
+        return x
+
+    else:
+        raise RuntimeError("Matrix A is not lower triangular.")
+
+def linealSolverBackwards(A, b):
+    """Solves a system of equations given a upper triangular matrix.
+
+    Arguments:
+        A: Upper triangular matrix. Shape: (n,n)
+        b: System's solutions. Shape: (n, 1)
+
+    Raises:
+        RuntimeError if A is not upper triangular
+
+    Returns:
+        A numpy array with the system's X vector. Shape: (n,1)
+    """
+    if np.allclose(A, np.triu(A)):
+        n = len(b)
+        x = np.zeros((n, 1))
+
+        for k in reversed(range(0, n)):
+
+            tempSum = []
+            for number in range(k + 1, n):
+                tempSum.append(-1 * A[k][number] * x[number])
+
+            tempSum = sum(tempSum)
+            x[k] = (b[k] + tempSum) / A[k][k]
+
+        return x
+
+    else:
+        raise RuntimeError("Matrix A is not upper triangular.")
+
+
 def cholesky(matrix):
     """Performs the cholesky descomposition into two matrices.
 
@@ -139,6 +202,43 @@ def test_cholesky():
             print("-> Pass <-")
 
 
+def leastsq(A, b):
+    """Solves a least squares problem.
+    Arguments:
+        A: Numpy Matrix
+        b: Numpy array with the points to approximate.
+    Raises:
+        RuntimeError if b is not a nx1 vector or the size of A (which is
+        square) is different than n, also if either A or b are not arrays.
+    Returns:
+        A numpy array with the system's approximation
+    """
+
+    if type(A) != np.ndarray or type(b) != np.ndarray:
+        raise RuntimeError("Input error! One of the leastq arguments is not a "
+                           + "numpy array")
+
+    if b.shape[1] != 1 or A.shape[0] != b.shape[0]:
+        print('b', A.shape[1], b.shape[0])
+        raise RuntimeError("b is not a nx1 vector or the size of A is "
+                           + "different than n.")
+
+    # D is A^t*A and E is A^t*b
+    # D x = E
+    D = np.matmul(np.matrix.transpose(A), A)
+    E = np.matmul(np.matrix.transpose(A), b)
+
+    # Separates the lower and upper part of the cholesky decomposition of D
+    # lowD uppD x = E
+    lowD, uppD = cholesky(D)
+
+    # W is equal to uppD x, and thus is the solution for LowD W = E
+    W = linealSolverForward(lowD, E)
+    x = linealSolverBackwards(uppD, W)
+    return x
+
+
 if __name__ == "__main__":
-    print("Executed as stand-alone script. Running test function.\n")
-    test_cholesky()
+    #print("Executed as stand-alone script. Running test function.\n")
+    #test_cholesky()
+    print(leastsq(np.array([[1, 2], [3, 4], [5, 6]]), np.array([[5], [11], [17]])))

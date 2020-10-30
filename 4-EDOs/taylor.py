@@ -14,6 +14,22 @@ import matplotlib.pyplot as plt
 # h: paso de integración
 ####################################
 def euler(f, x0, t0, tf, h):
+    """
+    Arguments:
+        f: Function handler. Must recieve two arguments, t and x. f(t, x).
+        x0: Initial value
+        t0 / tf: Initial and final time to evaluate
+        h: Desiered step
+
+    Returns:
+        t, x
+        t: Array with the time points used for the function's calculation.
+            (X axis on a plot)
+            Shape: (n,)
+        x: Obtained values at a given t.
+            (Y axis on a plot)
+            Shape: (n,1)  - One row for each element in t -
+    """
     N = int((tf - t0) / h)  # número de puntos
     t = linspace(t0, tf, N + 1)
     n = x0.shape[0]  # dimensión del problema
@@ -21,18 +37,29 @@ def euler(f, x0, t0, tf, h):
     x[:, 0] = x0
     for k in range(N):
         x[:, k + 1] = x[:, k] + h * f(t[k], x[:, k])
-
     return t, x
 
-####################################
-# Implementación genérica de Taylor 2
-# x0: condición inicial
-# t0, tf: tiempo inicial y final
-# h: paso de integración
-# derivatives: adjuntar las derivadas con las
-# que se quiera armar el polinomio
-####################################
+
 def taylor(x0, t0, tf, h, *derivatives):
+    """
+    Generic implementation of taylor of N order
+    Arguments:
+        x0: Initial value
+        t0 / tf: Initial and final time to evaluate
+        h: Desiered step
+        f: derivatives of the function g, starting from g'
+        up to the desired order
+
+
+    Returns:
+        t, x
+        t: Array with the time points used for the function's calculation.
+            (X axis on a plot)
+            Shape: (n,)
+        x: Obtained values at a given t.
+            (Y axis on a plot)
+            Shape: (n,1)  - One row for each element in t -
+    """
     N = int((tf - t0) / h)  # número de puntos
     t = linspace(t0, tf, N + 1)
     n = x0.shape[0]  # dimensión del problema
@@ -46,6 +73,11 @@ def taylor(x0, t0, tf, h, *derivatives):
 
     return t, x
 
+
+# LO SIGUIENTE ES EL EJEMPLO QUE DIÓ EN CLASE USANDO AL FUNCIÓN TAYOR
+# SI CORRES LA FUNCIÓN PARA MOSTRAR EL ERROR TENES QUE CAMBIAR AHÍ LOS DATOS
+# SEGUN EL GRAOD QUE USES
+# SAME PLOTAYLOR
 
 ########################
 # EJEMPLO

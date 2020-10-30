@@ -1,6 +1,10 @@
 import numpy as np
 
 def LUdec(matrix):
+    '''
+    :param matrix: matriz a descomponer en l y u
+    :return L, U
+    '''
 
     n = matrix.shape[0]
     U = matrix
